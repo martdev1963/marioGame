@@ -1,3 +1,19 @@
 https://www.youtube.com/watch?v=VNs96uQoetw
 
-vid_time:  0:58/2:12:04
+vid_time:  9:29/2:12:04
+Typical file structure:
+index.html - Main HTML file
+style.css - Styling for the game
+script.js or game.js - Game logic
+Common starting points:
+Set up the HTML canvas element
+Create the game loop
+Add player character (Mario)
+Add basic movement controls
+Add gravity and collision detection
+Add platforms/ground
+Add enemies
+Add game mechanics (jumping, running, etc.)
+
+https://emojidb.org/mushroom-emojis
+
