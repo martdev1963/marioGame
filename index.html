@@ -1,5 +1,5 @@
 <!DOCTYPE html> 
-
+<!--  vid_time:  1:02:41/2:12:04 -->
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -16,10 +16,13 @@
                     <span id="score">0</span>
                 </p>
                 <p>Levels:
-                    <span id="level">1</p></span>
+                    <span id="level">1</span>
                 </p>          
                 <p>Lives:
                     <span id="lives">3</span>
+                </p>
+                <p>Evil Mushrooms:
+                    <span id="evil-mushrooms">0</span>
                 </p>
             </div>
 
@@ -37,7 +40,7 @@
 
 
     <!--Start of Game Over Screen-->
-    <div class="game-over">
+    <div id="game-over">
         <h2 id="game-over-title">Game Over</h2>
         <p>Your score: <span id="final-score">0</span></p>
         <button id="restart-button">Play Again</button>
@@ -47,6 +50,6 @@
 
 
 
-        <script src="script.js"></script>
+        <script src="app.js"></script>
     </body>
 </html>
