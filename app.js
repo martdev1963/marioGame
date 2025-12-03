@@ -4,7 +4,7 @@
 //    Mario Game Clone Project - App.js
 // 'Embrace the codebase one line at a time'
 // --Coding_Monk
-// vid_time:  1:26:41/2:12:04
+// vid_time:  1:33:59/2:12:04
 //-------------------------------------------
 
 // Game Constants
@@ -342,14 +342,15 @@ function showGameOver(isWin) {
 //}// End of clearLevel
 
 function clearLevel() {
-
-    //const gameArea = document.getElementById('game-area');
+    // Remove all game object elements from the DOM
     Object.values(gameObjects).flat().forEach(object => {
         if (object.element && object.element.parentNode) {
-            object.element.parentNode.removeChild(object.element);
+            // Modern API: element.remove() is cleaner than parentNode.removeChild()
+            object.element.remove();
         }
     });
-    // clear the game objects object
+    
+    // Clear the game objects arrays
     gameObjects = {
         platforms: [],
         enemies: [],
@@ -358,11 +359,12 @@ function clearLevel() {
         pipes: []
     };
 
-    // alt way to clear the arrays
-    // clear the game objects arrays
-    //Object.keys(gameObjects).forEach(key => {
-    //    gameObjects[key] = []
-    //});
+    // Alternative approach (simpler but less flexible):
+    // const gameArea = document.getElementById('game-area');
+    // gameArea.innerHTML = '';
+    // Object.keys(gameObjects).forEach(key => {
+    //     gameObjects[key] = [];
+    // });
 }// End of clearLevel
 
 // Keyboard code to game state key mapping
@@ -438,7 +440,7 @@ function gameLoop() {
  * @param {Object} rect2 - Second rectangle with x, y, width, height
  * @returns {boolean} True if rectangles are colliding
  */
-function checkCollision(rect1, rect2) {
+function checkCollision(rect1, rect2) { // transparent rectangle collision detection, works for all game objects
     return rect1.x < rect2.x + rect2.width &&
            rect1.x + rect1.width > rect2.x &&
            rect1.y < rect2.y + rect2.height &&
@@ -497,6 +499,116 @@ function handlePlatformCollisions() {
         }
     });
 }// End of handlePlatformCollisions
+/**
+ * Handles collision detection and response between player and pipes
+ */
+function handlePipeCollisions() {
+    gameObjects.pipes.forEach(pipe => {
+        if (checkCollision(player, pipe)) {
+            console.log('pipe collision detected');
+            if (player.velocityY > 0) { // if the player is moving down (falling)
+                player.y = pipe.y - player.height; // move the player up to the top of the pipe
+                player.velocityY = 0; // stop the player from falling
+                player.grounded = true; // set the player to grounded
+            }
+            // Calculate overlap amounts
+            const overlapX = Math.min(
+                player.x + player.width - pipe.x,
+                pipe.x + pipe.width - player.x
+            );
+            const overlapY = Math.min(
+                player.y + player.height - pipe.y,
+                pipe.y + pipe.height - player.y
+            );
+            
+            // Resolve collision based on smallest overlap (axis of least penetration)
+            if (overlapX < overlapY) {
+                // Horizontal collision
+                if (player.x < pipe.x) {
+                    // Player hit left side of pipe
+                    player.x = pipe.x - player.width;
+                } else {
+                    // Player hit right side of pipe
+                    player.x = pipe.x + pipe.width;
+                }
+                player.velocityX = 0;
+            } else {
+                // Vertical collision
+                if (player.y < pipe.y) {
+                    // Player is on top of pipe
+                    player.y = pipe.y - player.height;
+                    player.velocityY = 0;
+                    player.grounded = true;
+                } else {
+                    // Player hit bottom of pipe (head bump)
+                    player.y = pipe.y + pipe.height;
+                    player.velocityY = 0;
+                }
+            }
+        }
+    });
+}// End of handlePipeCollisions
+
+/**
+ * Handles collision detection and response between player and enemies and enemies movement
+ */
+function handleEnemyCollisions() {
+    gameObjects.enemies.forEach(enemy => {
+        if (enemy.alive) {
+            enemy.x += enemy.speed * enemy.direction;
+            
+            // Check if enemy is on a platform and reverse direction at edges
+            let onPlatform = false;
+            for (const platform of gameObjects.platforms) {
+                // Check if enemy is on top of platform
+                if (enemy.x + enemy.width > platform.x && 
+                    enemy.x < platform.x + platform.width && 
+                    enemy.y + enemy.height >= platform.y - 5 && 
+                    enemy.y < platform.y + platform.height) {
+                    onPlatform = true;
+                    // Reverse direction if at platform edge
+                    if (enemy.x <= platform.x || enemy.x + enemy.width >= platform.x + platform.width) {
+                        enemy.direction *= -1;
+                    }
+                    break;
+                }
+            }
+            
+            // Reverse direction at game area boundaries
+            if (enemy.x <= 0 || enemy.x + enemy.width >= 800) {
+                enemy.direction *= -1;
+            }
+            
+            // Handle collision with player
+            if (checkCollision(player, enemy)) {
+                console.log('enemy collision detected');
+                if (player.velocityY > 0 && player.y < enemy.y) {
+                    // Player is falling and lands on top of enemy - kill enemy
+                    enemy.alive = false;
+                    enemy.element.style.display = 'none';
+                    player.y = enemy.y - player.height;
+                    player.velocityY = 0;
+                    player.grounded = true;
+                    gameState.score += 100; // Award points for killing enemy
+                    updateUIStats();
+                } else {
+                    // Enemy hits player from side or top - player takes damage
+                    gameState.lives--;
+                    updateUIStats();
+                    if (gameState.lives <= 0) {
+                        showGameOver(false);
+                    } else {
+                        // Reset player position
+                        player.x = 50;
+                        player.y = 320;
+                        player.velocityX = 0;
+                        player.velocityY = 0;
+                    }
+                }
+            }
+        }
+    });
+}// End of handleEnemyCollisions
 
 
 function update() {
@@ -533,6 +645,18 @@ function update() {
     // Update position
     updateElementPosition(player.element, player.x, player.y);
 
+    // Handle collisions with pipes
+    handlePipeCollisions();
+
+    // Handle collisions with enemies
+    handleEnemyCollisions();
+    
+    // Update all enemy positions in the DOM
+    gameObjects.enemies.forEach(enemy => {
+        if (enemy.alive) {
+            updateElementPosition(enemy.element, enemy.x, enemy.y);
+        }
+    });
 }
 
 // Alternate way to update the game logic
