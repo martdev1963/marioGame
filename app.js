@@ -4,7 +4,7 @@
 //    Mario Game Clone Project - App.js
 // 'Embrace the codebase one line at a time'
 // --Coding_Monk
-// vid_time:  1:33:59/2:12:04
+// vid_time:  1:49:32/2:12:04
 //-------------------------------------------
 
 // Game Constants
@@ -603,6 +603,13 @@ function handleEnemyCollisions() {
                         player.y = 320;
                         player.velocityX = 0;
                         player.velocityY = 0;
+                        player.grounded = true;
+                        player.big = false;
+                        player.bigTimer = 0;
+                        player.element.classList.remove('big');
+                        player.width = 20;
+                        player.height = 20;
+                        // vid_time: 1:49:32/2:12:04
                     }
                 }
             }
