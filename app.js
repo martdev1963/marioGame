@@ -582,7 +582,11 @@ function handleEnemyCollisions() {
             // Handle collision with player
             if (checkCollision(player, enemy)) {
                 console.log('enemy collision detected');
-                if (player.velocityY > 0 && player.y < enemy.y) {
+                // Check if player is stomping on enemy (falling and landing on top)
+                // Player's bottom edge should be at or near enemy's top edge
+                const isStomping = player.velocityY > 0 && 
+                                   player.y + player.height <= enemy.y + 5;
+                if (isStomping) {
                     // Player is falling and lands on top of enemy - kill enemy
                     enemy.alive = false;
                     enemy.element.style.display = 'none';
