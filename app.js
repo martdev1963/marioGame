@@ -4,7 +4,7 @@
 //    Mario Game Clone Project - App.js
 // 'Embrace the codebase one line at a time'
 // --Coding_Monk
-// vid_time:  1:49:32/2:12:04
+// vid_time:  1:51:20/2:12:04
 //-------------------------------------------
 
 // Game Constants
@@ -539,6 +539,17 @@ function handlePipeCollisions() {
                     player.y = pipe.y - player.height;
                     player.velocityY = 0;
                     player.grounded = true;
+                    
+                    // Check if player is entering the pipe (on top and pressing down)
+                    // Also check if player is centered on the pipe (within reasonable range)
+                    const playerCenterX = player.x + player.width / 2;
+                    const pipeCenterX = pipe.x + pipe.width / 2;
+                    const isCenteredOnPipe = Math.abs(playerCenterX - pipeCenterX) < 15;
+                    
+                    if (isCenteredOnPipe && gameState.keys.down) {
+                        // Player is entering the pipe - advance to next level
+                        nextLevel();
+                    }
                 } else {
                     // Player hit bottom of pipe (head bump)
                     player.y = pipe.y + pipe.height;
@@ -621,6 +632,75 @@ function handleEnemyCollisions() {
     });
 }// End of handleEnemyCollisions
 
+/**
+ * Handles collision detection and response between player and surprise blocks
+ */
+function handleSurpriseBlockCollisions() {
+    // Only process one collision per frame to prevent duplicates
+    let collisionProcessed = false;
+    
+    for (const surpriseBlock of gameObjects.surpriseBlock) {
+        if (collisionProcessed) break;
+        
+        if (checkCollision(player, surpriseBlock)) {
+            // Check if player hits block from below (head bump)
+            // More precise check: player's top should be below or at the block's bottom, and moving up
+            const isHittingFromBelow = player.velocityY < 0 && 
+                                       player.y + player.height <= surpriseBlock.y + 5 &&
+                                       !surpriseBlock.hit;
+            
+            if (isHittingFromBelow) {
+                // Mark as hit immediately to prevent multiple triggers
+                surpriseBlock.hit = true;
+                surpriseBlock.element.classList.add('hit');
+                
+                // Award points for hitting the block
+                gameState.score += 200;
+                updateUIStats();
+                
+                // Handle block type (mushroom or coin)
+                if (surpriseBlock.type === 'mushroom') {
+                    // Make Mario big (only if not already big and class not already added)
+                    if (!player.big && !player.element.classList.contains('big')) {
+                        player.big = true;
+                        player.bigTimer = 0;
+                        player.element.classList.add('big');
+                        // Note: width and height stay the same, CSS handles the visual size
+                    }
+                } else if (surpriseBlock.type === 'coin') {
+                    // Award additional points for coin
+                    gameState.score += 100;
+                    updateUIStats();
+                }
+                
+                // Push player down slightly to prevent getting stuck
+                player.y = surpriseBlock.y + surpriseBlock.height;
+                player.velocityY = 0;
+                
+                // Mark that we've processed a collision this frame
+                collisionProcessed = true;
+                break;
+            } else if (player.velocityY > 0 && player.y < surpriseBlock.y) {
+                // Player lands on top of the block
+                player.y = surpriseBlock.y - player.height;
+                player.velocityY = 0;
+                player.grounded = true;
+            }
+        }
+    }
+}// End of handleSurpriseBlockCollisions
+
+
+// next level function
+function nextLevel() {
+    gameState.level++;
+    if (gameState.level > levels.length) {
+        showGameOver(true);
+    } else {
+        loadLevel(gameState.level - 1);
+    }
+}// End of nextLevel
+
 
 function update() {
     // Handle horizontal movement
@@ -661,6 +741,9 @@ function update() {
 
     // Handle collisions with enemies
     handleEnemyCollisions();
+    
+    // Handle collisions with surprise blocks
+    handleSurpriseBlockCollisions();
     
     // Update all enemy positions in the DOM
     gameObjects.enemies.forEach(enemy => {
