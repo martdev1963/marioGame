@@ -4,7 +4,7 @@
 //    Mario Game Clone Project - App.js
 // 'Embrace the codebase one line at a time'
 // --Coding_Monk
-// vid_time:  1:51:20/2:12:04
+// vid_time:  1:58:01/2:12:04
 //-------------------------------------------
 
 // Game Constants
@@ -86,7 +86,7 @@ const levels = [
             {x: 620, y: 260},
         ],
         surpriseBlock: [
-            {x: 350, y: 220, type: 'mushroom'},
+            {x: 320, y: 180, type: 'mushroom'},
         ],
         pipes: [
             {x: 750, y: 320}
@@ -636,23 +636,19 @@ function handleEnemyCollisions() {
  * Handles collision detection and response between player and surprise blocks
  */
 function handleSurpriseBlockCollisions() {
-    // Only process one collision per frame to prevent duplicates
-    let collisionProcessed = false;
-    
     for (const surpriseBlock of gameObjects.surpriseBlock) {
-        if (collisionProcessed) break;
+        // Skip if already hit to prevent any processing
+        if (surpriseBlock.hit) continue;
         
         if (checkCollision(player, surpriseBlock)) {
             // Check if player hits block from below (head bump)
-            // More precise check: player's top should be below or at the block's bottom, and moving up
+            // Player is hitting from below if moving up and his top is below the block's bottom
             const isHittingFromBelow = player.velocityY < 0 && 
-                                       player.y + player.height <= surpriseBlock.y + 5 &&
-                                       !surpriseBlock.hit;
+                                       player.y < surpriseBlock.y + surpriseBlock.height;
             
             if (isHittingFromBelow) {
-                // Mark as hit immediately to prevent multiple triggers
+                // Mark as hit FIRST, before any other processing, to prevent multiple triggers
                 surpriseBlock.hit = true;
-                surpriseBlock.element.classList.add('hit');
                 
                 // Award points for hitting the block
                 gameState.score += 200;
@@ -660,12 +656,29 @@ function handleSurpriseBlockCollisions() {
                 
                 // Handle block type (mushroom or coin)
                 if (surpriseBlock.type === 'mushroom') {
-                    // Make Mario big (only if not already big and class not already added)
-                    if (!player.big && !player.element.classList.contains('big')) {
-                        player.big = true;
-                        player.bigTimer = 0;
-                        player.element.classList.add('big');
-                        // Note: width and height stay the same, CSS handles the visual size
+                    // Make Mario big - ensure we only do this once
+                    if (!player.big) {
+                        // Ensure there's only one Mario element in the DOM
+                        const allMarios = document.querySelectorAll('#mario');
+                        if (allMarios.length > 1) {
+                            // Remove duplicate Mario elements, keep only the first one
+                            for (let i = 1; i < allMarios.length; i++) {
+                                allMarios[i].remove();
+                            }
+                        }
+                        
+                        // Get the Mario element directly
+                        const marioElement = document.getElementById('mario');
+                        if (marioElement) {
+                            // Update player.element reference to ensure it's correct
+                            player.element = marioElement;
+                            player.big = true;
+                            player.bigTimer = 0;
+                            // Only add class if not already present
+                            if (!marioElement.classList.contains('big')) {
+                                marioElement.classList.add('big');
+                            }
+                        }
                     }
                 } else if (surpriseBlock.type === 'coin') {
                     // Award additional points for coin
@@ -673,13 +686,15 @@ function handleSurpriseBlockCollisions() {
                     updateUIStats();
                 }
                 
+                // Update block visual state
+                surpriseBlock.element.classList.add('hit');
+                
                 // Push player down slightly to prevent getting stuck
                 player.y = surpriseBlock.y + surpriseBlock.height;
                 player.velocityY = 0;
                 
-                // Mark that we've processed a collision this frame
-                collisionProcessed = true;
-                break;
+                // Exit immediately after processing one collision
+                return;
             } else if (player.velocityY > 0 && player.y < surpriseBlock.y) {
                 // Player lands on top of the block
                 player.y = surpriseBlock.y - player.height;
@@ -689,6 +704,28 @@ function handleSurpriseBlockCollisions() {
         }
     }
 }// End of handleSurpriseBlockCollisions
+
+/**
+ * Handles collision detection and response between player and coins
+ */
+function handleCoinCollisions() {
+    gameObjects.coins.forEach(coin => {
+        // Skip if coin is already collected
+        if (coin.collected) return;
+        
+        if (checkCollision(player, coin)) {
+            // Mark coin as collected
+            coin.collected = true;
+            
+            // Hide the coin element
+            coin.element.style.display = 'none';
+            
+            // Award points for collecting coin
+            gameState.score += 100;
+            updateUIStats();
+        }
+    });
+}// End of handleCoinCollisions
 
 
 // next level function
@@ -700,6 +737,44 @@ function nextLevel() {
         loadLevel(gameState.level - 1);
     }
 }// End of nextLevel
+
+
+// restart game function
+function restartGame() {
+    // Hide the game-over screen
+    document.getElementById('game-over').style.display = 'none';
+    
+    // Reset game state
+    gameState.level = 1;
+    gameState.lives = 3;
+    gameState.score = 0;
+    gameState.gameRunning = true;
+    gameState.keys = {
+        left: false,
+        right: false,
+        up: false,
+        down: false,
+        space: false,
+        enter: false,
+        escape: false,
+        tab: false,
+        shift: false,
+        ctrl: false,
+        alt: false,
+    };
+    
+    // Load the first level
+    loadLevel(gameState.level - 1);
+    
+    // Update UI stats
+    updateUIStats();
+    
+    // Restart the game loop
+    gameLoop();
+}// End of restartGame
+
+
+document.getElementById('restart-button').addEventListener('click', restartGame);
 
 
 function update() {
@@ -744,6 +819,9 @@ function update() {
     
     // Handle collisions with surprise blocks
     handleSurpriseBlockCollisions();
+    
+    // Handle collisions with coins
+    handleCoinCollisions();
     
     // Update all enemy positions in the DOM
     gameObjects.enemies.forEach(enemy => {
