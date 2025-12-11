@@ -4,7 +4,8 @@
 //    Mario Game Clone Project - App.js
 // 'Embrace the codebase one line at a time'
 // --Coding_Monk
-// vid_time:  1:58:01/2:12:04
+// vid_time:  2:04:53/2:12:04
+// https://sevalla.com/
 //-------------------------------------------
 
 // Game Constants
@@ -447,6 +448,92 @@ function checkCollision(rect1, rect2) { // transparent rectangle collision detec
            rect1.y + rect1.height > rect2.y;
 }// End of checkCollision
 
+
+/**
+ * Spawns an item on a block
+ * @param {Object} block - The block to spawn the item on
+ * @param {string} type - The type of item to spawn (e.g., 'mushroom', 'coin')
+ */
+function spawnItemOnBox(block, type) {
+    const gameArea = document.getElementById('game-area');
+    const item = createElement('div', `item ${type}`, { // we want this item to be slightly above the block , this object is not part of the gameObjects array
+        left: block.x + 'px',
+        top: (block.y -20) + 'px',
+        width: '20px',
+        height: '20px'
+    });
+    gameArea.appendChild(item);
+
+    const itemObject = {
+        element: item,
+        x: block.x,
+        y: block.y - 20,
+        width: 20,
+        height: 20,
+        type: type,
+        id: 'item-' + type,
+        velocityY: 0,
+        frames: 0
+    };
+
+    if (type === 'mushroom') {
+        console.log('mushroom spawned');
+
+        function fall() {
+            // Apply gravity to velocity
+            itemObject.velocityY += GRAVITY;
+            
+            // Update position based on velocity
+            itemObject.y += itemObject.velocityY;
+            
+            // Check collision with platforms
+            let onPlatform = false;
+            for (const platform of gameObjects.platforms) {
+                if (checkCollision(itemObject, platform)) {
+                    onPlatform = true;
+                    // Position mushroom on top of platform
+                    itemObject.y = platform.y - itemObject.height;
+                    itemObject.velocityY = 0; // stop the mushroom from falling
+                    break; // Exit loop once collision found
+                }
+            }
+            
+            // Update visual position
+            itemObject.element.style.top = itemObject.y + 'px';
+            
+            // Continue falling if not on platform
+            if (!onPlatform) {
+                requestAnimationFrame(fall);
+            }
+        }
+        
+        // Start the falling animation
+        fall();
+    } else if (type === 'coin') {
+        function float() {
+            itemObject.y -= 1; // move the coin up
+            item.style.top = itemObject.y + 'px'; // update the position of the coin
+            itemObject.frames++; // increment the frames
+
+            if (itemObject.frames < 180) { // after 180 frames, the coin will be removed
+                requestAnimationFrame(float);
+            } else {
+                itemObject.element.remove(); // remove the coin from the DOM
+            }
+        }
+        
+     
+    
+
+        // Start the floating animation
+        float();
+    }   
+
+}// End of spawnItemOnBox
+
+
+
+
 /**
  * Handles collision detection and response between player and platforms
  */
@@ -649,7 +736,10 @@ function handleSurpriseBlockCollisions() {
             if (isHittingFromBelow) {
                 // Mark as hit FIRST, before any other processing, to prevent multiple triggers
                 surpriseBlock.hit = true;
-                
+            
+                // Spawn item on the block
+                spawnItemOnBox(surpriseBlock, surpriseBlock.type);
+
                 // Award points for hitting the block
                 gameState.score += 200;
                 updateUIStats();
@@ -734,6 +824,9 @@ function nextLevel() {
     if (gameState.level > levels.length) {
         showGameOver(true);
     } else {
+        player.element.classList.remove('big');
+        player.width = 20;
+        player.height = 20;
         loadLevel(gameState.level - 1);
     }
 }// End of nextLevel
