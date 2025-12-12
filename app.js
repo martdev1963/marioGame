@@ -125,6 +125,53 @@ const levels = [
         pipes: [
             {x: 750, y: 320}
         ]
+    },
+    // level 3 object - More challenging level with varied platforming
+    {
+        platforms: [
+            {x: 0, y: 360, width: 150, height: 40, type: 'ground'},
+            {x: 200, y: 360, width: 100, height: 40, type: 'ground'},
+            {x: 400, y: 360, width: 150, height: 40, type: 'ground'},
+            {x: 650, y: 360, width: 150, height: 40, type: 'ground'},
+            // Floating platforms for vertical challenge
+            {x: 150, y: 300, width: 60, height: 20, type: 'floating'},
+            {x: 300, y: 280, width: 80, height: 20, type: 'floating'},
+            {x: 320, y: 240, width: 60, height: 20, type: 'floating'},
+            {x: 450, y: 260, width: 70, height: 20, type: 'floating'},
+            {x: 500, y: 220, width: 60, height: 20, type: 'floating'},
+            {x: 600, y: 280, width: 80, height: 20, type: 'floating'},
+            {x: 650, y: 240, width: 60, height: 20, type: 'floating'},
+            // Blue platforms for variety
+            {x: 250, y: 200, width: 40, height: 20, type: 'blue'},
+            {x: 550, y: 180, width: 50, height: 20, type: 'blue'},
+            {x: 700, y: 200, width: 40, height: 20, type: 'blue'}
+        ],
+        enemies: [
+            {x: 250, y: 344, type: 'brown'},
+            {x: 450, y: 344, type: 'brown'},
+            {x: 300, y: 264, type: 'purple'},
+            {x: 500, y: 204, type: 'purple'},
+            {x: 680, y: 344, type: 'brown'},
+            {x: 650, y: 224, type: 'purple'}
+        ],
+        coins: [
+            {x: 170, y: 280},
+            {x: 330, y: 220},
+            {x: 340, y: 180},
+            {x: 470, y: 240},
+            {x: 520, y: 200},
+            {x: 620, y: 260},
+            {x: 670, y: 220},
+            {x: 720, y: 180}
+        ],
+        surpriseBlock: [
+            {x: 320, y: 200, type: 'mushroom'},
+            {x: 500, y: 180, type: 'coin'},
+            {x: 700, y: 180, type: 'mushroom'}
+        ],
+        pipes: [
+            {x: 750, y: 320}
+        ]
     }
 ]// End of Levels array
 
