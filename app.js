@@ -2,10 +2,8 @@
 //              MAB MEDIA 
 //           Software Systems
 //    Mario Game Clone Project - App.js
-// 'Embrace the codebase one line at a time'
-// --Coding_Monk
-// vid_time:  2:04:53/2:12:04
-// https://sevalla.com/
+//     Inspired by:    
+//     Ania Kubow kubowania 
 //-------------------------------------------
 
 // Game Constants
