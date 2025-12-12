@@ -1,7 +1,16 @@
 #!/bin/bash
-# Simple build script for static site
-# Just ensures the publish directory exists
+# Build script for static site deployment on Render
+# Creates build directory and copies all necessary files
+
+# Create build directory
 mkdir -p build
-cp -r *.html *.css *.js build/ 2>/dev/null || true
-echo "Build complete - files ready in current directory"
+
+# Copy all HTML, CSS, and JS files to build directory
+cp index.html build/
+cp style.css build/
+cp app.js build/
+
+# Verify files were copied
+echo "Build complete! Files copied to build directory:"
+ls -la build/
 
