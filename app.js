@@ -172,6 +172,179 @@ const levels = [
         pipes: [
             {x: 750, y: 320}
         ]
+    },
+    // level 4 - Grass and stone theme with birds
+    {
+        platforms: [
+            {x: 0, y: 360, width: 120, height: 40, type: 'grass'},
+            {x: 180, y: 360, width: 100, height: 40, type: 'stone'},
+            {x: 350, y: 360, width: 120, height: 40, type: 'grass'},
+            {x: 550, y: 360, width: 100, height: 40, type: 'stone'},
+            {x: 700, y: 360, width: 100, height: 40, type: 'grass'},
+            // Vertical climbing challenge
+            {x: 120, y: 320, width: 40, height: 20, type: 'floating'},
+            {x: 120, y: 280, width: 40, height: 20, type: 'floating'},
+            {x: 120, y: 240, width: 40, height: 20, type: 'floating'},
+            {x: 280, y: 300, width: 60, height: 20, type: 'stone'},
+            {x: 380, y: 280, width: 50, height: 20, type: 'grass'},
+            {x: 470, y: 260, width: 60, height: 20, type: 'stone'},
+            {x: 570, y: 240, width: 50, height: 20, type: 'grass'},
+            {x: 650, y: 220, width: 60, height: 20, type: 'stone'},
+            {x: 720, y: 200, width: 40, height: 20, type: 'grass'}
+        ],
+        enemies: [
+            {x: 200, y: 344, type: 'brown'},
+            {x: 380, y: 344, type: 'purple'},
+            {x: 580, y: 344, type: 'brown'},
+            {x: 300, y: 284, type: 'bird'},
+            {x: 500, y: 244, type: 'bird'},
+            {x: 680, y: 204, type: 'bird'}
+        ],
+        coins: [
+            {x: 140, y: 300},
+            {x: 140, y: 220},
+            {x: 300, y: 280},
+            {x: 400, y: 260},
+            {x: 490, y: 240},
+            {x: 590, y: 220},
+            {x: 670, y: 200},
+            {x: 740, y: 180},
+            {x: 250, y: 344}
+        ],
+        surpriseBlock: [
+            {x: 280, y: 260, type: 'mushroom'},
+            {x: 470, y: 220, type: 'coin'},
+            {x: 650, y: 180, type: 'mushroom'}
+        ],
+        pipes: [
+            {x: 750, y: 320}
+        ]
+    },
+    // level 5 - Brick theme with spiders and more enemies
+    {
+        platforms: [
+            {x: 0, y: 360, width: 100, height: 40, type: 'brick'},
+            {x: 150, y: 360, width: 80, height: 40, type: 'brick'},
+            {x: 280, y: 360, width: 100, height: 40, type: 'brick'},
+            {x: 430, y: 360, width: 90, height: 40, type: 'brick'},
+            {x: 580, y: 360, width: 100, height: 40, type: 'brick'},
+            {x: 720, y: 360, width: 80, height: 40, type: 'brick'},
+            // Complex platforming paths
+            {x: 100, y: 300, width: 50, height: 20, type: 'floating'},
+            {x: 200, y: 280, width: 60, height: 20, type: 'brick'},
+            {x: 300, y: 260, width: 50, height: 20, type: 'floating'},
+            {x: 400, y: 240, width: 60, height: 20, type: 'brick'},
+            {x: 500, y: 220, width: 50, height: 20, type: 'floating'},
+            {x: 600, y: 200, width: 60, height: 20, type: 'brick'},
+            {x: 700, y: 180, width: 50, height: 20, type: 'floating'},
+            // High platforms
+            {x: 150, y: 200, width: 40, height: 20, type: 'blue'},
+            {x: 350, y: 180, width: 40, height: 20, type: 'blue'},
+            {x: 550, y: 160, width: 40, height: 20, type: 'blue'}
+        ],
+        enemies: [
+            {x: 180, y: 344, type: 'brown'},
+            {x: 310, y: 344, type: 'purple'},
+            {x: 460, y: 344, type: 'brown'},
+            {x: 610, y: 344, type: 'purple'},
+            {x: 220, y: 264, type: 'spider'},
+            {x: 420, y: 224, type: 'spider'},
+            {x: 620, y: 184, type: 'spider'},
+            {x: 170, y: 184, type: 'bird'},
+            {x: 370, y: 164, type: 'bird'},
+            {x: 570, y: 144, type: 'bird'}
+        ],
+        coins: [
+            {x: 120, y: 280},
+            {x: 220, y: 260},
+            {x: 320, y: 240},
+            {x: 420, y: 220},
+            {x: 520, y: 200},
+            {x: 620, y: 180},
+            {x: 720, y: 160},
+            {x: 170, y: 180},
+            {x: 370, y: 160},
+            {x: 570, y: 140},
+            {x: 250, y: 344}
+        ],
+        surpriseBlock: [
+            {x: 300, y: 220, type: 'mushroom'},
+            {x: 500, y: 180, type: 'coin'},
+            {x: 700, y: 140, type: 'mushroom'},
+            {x: 150, y: 160, type: 'coin'}
+        ],
+        pipes: [
+            {x: 750, y: 320}
+        ]
+    },
+    // level 6 - Ultimate challenge with mixed themes and spike platforms
+    {
+        platforms: [
+            {x: 0, y: 360, width: 80, height: 40, type: 'grass'},
+            {x: 120, y: 360, width: 70, height: 40, type: 'stone'},
+            {x: 230, y: 360, width: 80, height: 40, type: 'brick'},
+            {x: 350, y: 360, width: 70, height: 40, type: 'grass'},
+            {x: 460, y: 360, width: 80, height: 40, type: 'stone'},
+            {x: 580, y: 360, width: 70, height: 40, type: 'brick'},
+            {x: 690, y: 360, width: 110, height: 40, type: 'grass'},
+            // Multi-level platforming
+            {x: 80, y: 320, width: 40, height: 20, type: 'floating'},
+            {x: 80, y: 280, width: 40, height: 20, type: 'floating'},
+            {x: 190, y: 300, width: 50, height: 20, type: 'stone'},
+            {x: 280, y: 280, width: 50, height: 20, type: 'brick'},
+            {x: 370, y: 260, width: 50, height: 20, type: 'grass'},
+            {x: 460, y: 240, width: 50, height: 20, type: 'stone'},
+            {x: 550, y: 220, width: 50, height: 20, type: 'brick'},
+            {x: 640, y: 200, width: 50, height: 20, type: 'grass'},
+            // High platforms
+            {x: 150, y: 200, width: 40, height: 20, type: 'blue'},
+            {x: 300, y: 180, width: 40, height: 20, type: 'blue'},
+            {x: 450, y: 160, width: 40, height: 20, type: 'blue'},
+            {x: 600, y: 140, width: 40, height: 20, type: 'blue'},
+            // Spike platforms (dangerous!)
+            {x: 250, y: 240, width: 40, height: 20, type: 'spike'},
+            {x: 500, y: 200, width: 40, height: 20, type: 'spike'}
+        ],
+        enemies: [
+            {x: 150, y: 344, type: 'brown'},
+            {x: 280, y: 344, type: 'purple'},
+            {x: 390, y: 344, type: 'brown'},
+            {x: 500, y: 344, type: 'purple'},
+            {x: 620, y: 344, type: 'brown'},
+            {x: 730, y: 344, type: 'purple'},
+            {x: 200, y: 284, type: 'spider'},
+            {x: 400, y: 244, type: 'spider'},
+            {x: 600, y: 204, type: 'spider'},
+            {x: 170, y: 184, type: 'bird'},
+            {x: 320, y: 164, type: 'bird'},
+            {x: 470, y: 144, type: 'bird'},
+            {x: 620, y: 124, type: 'bird'}
+        ],
+        coins: [
+            {x: 100, y: 300},
+            {x: 100, y: 260},
+            {x: 210, y: 280},
+            {x: 300, y: 260},
+            {x: 390, y: 240},
+            {x: 480, y: 220},
+            {x: 570, y: 200},
+            {x: 660, y: 180},
+            {x: 170, y: 180},
+            {x: 320, y: 160},
+            {x: 470, y: 140},
+            {x: 620, y: 120},
+            {x: 200, y: 344}
+        ],
+        surpriseBlock: [
+            {x: 280, y: 240, type: 'mushroom'},
+            {x: 370, y: 220, type: 'coin'},
+            {x: 550, y: 180, type: 'mushroom'},
+            {x: 150, y: 160, type: 'coin'},
+            {x: 300, y: 140, type: 'mushroom'}
+        ],
+        pipes: [
+            {x: 750, y: 320}
+        ]
     }
 ]// End of Levels array
 
