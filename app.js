@@ -4,6 +4,8 @@
 //    Mario Game Clone Project - App.js
 //     Inspired by:    
 //     Ania Kubow kubowania 
+//     Game Assets:
+// https://itch.io/game-assets/tag-mario
 //-------------------------------------------
 
 // Game Constants
