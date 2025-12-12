@@ -17,3 +17,5 @@ Add game mechanics (jumping, running, etc.)
 
 https://emojidb.org/mushroom-emojis
 
+
+check my code for errors
