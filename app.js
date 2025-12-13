@@ -357,7 +357,7 @@ function initGame() {
     // Initialize Game State
     gameState.score = 0;
     gameState.level = 1;
-    gameState.lives = 3;
+    gameState.lives = 6;
     gameState.gameRunning = true;
     
     // Update UI stats on initialization
@@ -1059,7 +1059,7 @@ function restartGame() {
     
     // Reset game state
     gameState.level = 1;
-    gameState.lives = 3;
+    gameState.lives = 6;
     gameState.score = 0;
     gameState.gameRunning = true;
     gameState.keys = {
