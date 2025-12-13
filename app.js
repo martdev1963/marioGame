@@ -61,8 +61,8 @@ let gameObjects = {
     enemies: [],
     coins: [],
     surpriseBlock: [],
-    pipes: []
-    
+    pipes: [],
+    items: [] // Track spawned items (mushrooms, etc.)
 }
 
 // Levels array
@@ -421,6 +421,7 @@ function loadLevel(levelIndex) {
             speed: ENEMY_SPEED,
             id: 'enemy-' + index,
             alive: true,
+            type: enemyData.type, // Store enemy type for movement logic
         });
     });
     
@@ -577,7 +578,8 @@ function clearLevel() {
         enemies: [],
         coins: [],
         surpriseBlock: [],
-        pipes: []
+        pipes: [],
+        items: []
     };
 
     // Alternative approach (simpler but less flexible):
@@ -691,26 +693,34 @@ function spawnItemOnBox(block, type) {
         width: 20,
         height: 20,
         type: type,
-        id: 'item-' + type,
+        id: 'item-' + Date.now() + '-' + Math.random(), // Unique ID
         velocityY: 0,
-        frames: 0
+        velocityX: type === 'mushroom' ? 1 : 0, // Mushrooms move horizontally
+        frames: 0,
+        collected: false
     };
+
+    // Add item to gameObjects.items array for collision detection
+    gameObjects.items.push(itemObject);
 
     if (type === 'mushroom') {
         console.log('mushroom spawned');
 
         function fall() {
+            if (itemObject.collected) return; // Stop if collected
+            
             // Apply gravity to velocity
             itemObject.velocityY += GRAVITY;
             
             // Update position based on velocity
+            itemObject.x += itemObject.velocityX;
             itemObject.y += itemObject.velocityY;
             
             // Check collision with platforms
-            let onPlatform = false;
+            let itemOnPlatform = false;
             for (const platform of gameObjects.platforms) {
                 if (checkCollision(itemObject, platform)) {
-                    onPlatform = true;
+                    itemOnPlatform = true;
                     // Position mushroom on top of platform
                     itemObject.y = platform.y - itemObject.height;
                     itemObject.velocityY = 0; // stop the mushroom from falling
@@ -718,11 +728,17 @@ function spawnItemOnBox(block, type) {
                 }
             }
             
+            // Reverse direction at boundaries
+            if (itemObject.x <= 0 || itemObject.x + itemObject.width >= 800) {
+                itemObject.velocityX *= -1;
+            }
+            
             // Update visual position
+            itemObject.element.style.left = itemObject.x + 'px';
             itemObject.element.style.top = itemObject.y + 'px';
             
-            // Continue falling if not on platform
-            if (!onPlatform) {
+            // Continue falling if not on platform and not collected
+            if (!itemOnPlatform && !itemObject.collected) {
                 requestAnimationFrame(fall);
             }
         }
@@ -731,14 +747,21 @@ function spawnItemOnBox(block, type) {
         fall();
     } else if (type === 'coin') {
         function float() {
+            if (itemObject.collected) return; // Stop if collected
+            
             itemObject.y -= 1; // move the coin up
-            item.style.top = itemObject.y + 'px'; // update the position of the coin
+            itemObject.element.style.top = itemObject.y + 'px'; // update the position of the coin
             itemObject.frames++; // increment the frames
 
-            if (itemObject.frames < 180) { // after 180 frames, the coin will be removed
+            if (itemObject.frames < 180 && !itemObject.collected) { // after 180 frames, the coin will be removed
                 requestAnimationFrame(float);
             } else {
                 itemObject.element.remove(); // remove the coin from the DOM
+                // Remove from items array
+                const index = gameObjects.items.indexOf(itemObject);
+                if (index > -1) {
+                    gameObjects.items.splice(index, 1);
+                }
             }
         }
         
@@ -763,12 +786,6 @@ function handlePlatformCollisions() {
     // Check collision with each platform
     gameObjects.platforms.forEach(platform => {
         if (checkCollision(player, platform)) {
-            console.log('platform collision detected');
-            if (player.velocityY > 0) { // if the player is moving down (falling)
-                player.y = platform.y - player.height;
-                player.velocityY = 0;
-                player.grounded = true;
-            }
             // Calculate overlap amounts
             const overlapX = Math.min(
                 player.x + player.width - platform.x,
@@ -873,28 +890,45 @@ function handlePipeCollisions() {
 function handleEnemyCollisions() {
     gameObjects.enemies.forEach(enemy => {
         if (enemy.alive) {
+            // Flying enemies (birds and spiders) move differently than ground enemies
+            const isFlying = enemy.type === 'bird' || enemy.type === 'spider';
+            
             enemy.x += enemy.speed * enemy.direction;
             
-            // Check if enemy is on a platform and reverse direction at edges
-            let onPlatform = false;
-            for (const platform of gameObjects.platforms) {
-                // Check if enemy is on top of platform
-                if (enemy.x + enemy.width > platform.x && 
-                    enemy.x < platform.x + platform.width && 
-                    enemy.y + enemy.height >= platform.y - 5 && 
-                    enemy.y < platform.y + platform.height) {
-                    onPlatform = true;
-                    // Reverse direction if at platform edge
-                    if (enemy.x <= platform.x || enemy.x + enemy.width >= platform.x + platform.width) {
-                        enemy.direction *= -1;
-                    }
-                    break;
+            if (isFlying) {
+                // Birds and spiders fly horizontally and reverse at boundaries
+                if (enemy.x <= 0 || enemy.x + enemy.width >= 800) {
+                    enemy.direction *= -1;
                 }
-            }
-            
-            // Reverse direction at game area boundaries
-            if (enemy.x <= 0 || enemy.x + enemy.width >= 800) {
-                enemy.direction *= -1;
+            } else {
+                // Ground enemies check for platforms
+                let enemyOnPlatform = false;
+                for (const platform of gameObjects.platforms) {
+                    // Check if enemy is on top of platform
+                    if (enemy.x + enemy.width > platform.x && 
+                        enemy.x < platform.x + platform.width && 
+                        enemy.y + enemy.height >= platform.y - 5 && 
+                        enemy.y < platform.y + platform.height) {
+                        enemyOnPlatform = true;
+                        // Position enemy on top of platform
+                        enemy.y = platform.y - enemy.height;
+                        // Reverse direction if at platform edge
+                        if (enemy.x <= platform.x || enemy.x + enemy.width >= platform.x + platform.width) {
+                            enemy.direction *= -1;
+                        }
+                        break;
+                    }
+                }
+                
+                // Apply gravity if not on platform
+                if (!enemyOnPlatform) {
+                    enemy.y += 2; // Fall speed
+                }
+                
+                // Reverse direction at game area boundaries
+                if (enemy.x <= 0 || enemy.x + enemy.width >= 800) {
+                    enemy.direction *= -1;
+                }
             }
             
             // Handle collision with player
@@ -984,6 +1018,9 @@ function handleSurpriseBlockCollisions() {
                             player.element = marioElement;
                             player.big = true;
                             player.bigTimer = 0;
+                            // Update player size for collision detection
+                            player.width = 40;
+                            player.height = 40;
                             // Only add class if not already present
                             if (!marioElement.classList.contains('big')) {
                                 marioElement.classList.add('big');
@@ -1036,6 +1073,45 @@ function handleCoinCollisions() {
         }
     });
 }// End of handleCoinCollisions
+
+/**
+ * Handles collision detection and response between player and spawned items (mushrooms)
+ */
+function handleItemCollisions() {
+    gameObjects.items.forEach(item => {
+        // Skip if item is already collected
+        if (item.collected) return;
+        
+        if (checkCollision(player, item)) {
+            // Mark item as collected
+            item.collected = true;
+            
+            // Hide the item element
+            item.element.style.display = 'none';
+            
+            // Remove from items array
+            const index = gameObjects.items.indexOf(item);
+            if (index > -1) {
+                gameObjects.items.splice(index, 1);
+            }
+            
+            // Handle item type
+            if (item.type === 'mushroom') {
+                // Make Mario big
+                if (!player.big) {
+                    player.big = true;
+                    player.bigTimer = 0;
+                    player.width = 40;
+                    player.height = 40;
+                    player.element.classList.add('big');
+                }
+                // Award points for collecting mushroom
+                gameState.score += 200;
+                updateUIStats();
+            }
+        }
+    });
+}// End of handleItemCollisions
 
 
 // next level function
@@ -1135,6 +1211,43 @@ function update() {
     
     // Handle collisions with coins
     handleCoinCollisions();
+    
+    // Handle collisions with spawned items (mushrooms)
+    handleItemCollisions();
+    
+    // Boundary checks - keep player within game area
+    if (player.x < 0) {
+        player.x = 0;
+        player.velocityX = 0;
+    }
+    if (player.x + player.width > 800) {
+        player.x = 800 - player.width;
+        player.velocityX = 0;
+    }
+    if (player.y < 0) {
+        player.y = 0;
+        player.velocityY = 0;
+    }
+    if (player.y + player.height > 400) {
+        // Player fell off the bottom - lose a life
+        gameState.lives--;
+        updateUIStats();
+        if (gameState.lives <= 0) {
+            showGameOver(false);
+        } else {
+            // Reset player position
+            player.x = 50;
+            player.y = 320;
+            player.velocityX = 0;
+            player.velocityY = 0;
+            player.grounded = true;
+            player.big = false;
+            player.bigTimer = 0;
+            player.element.classList.remove('big');
+            player.width = 20;
+            player.height = 20;
+        }
+    }
     
     // Update all enemy positions in the DOM
     gameObjects.enemies.forEach(enemy => {
