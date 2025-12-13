@@ -24,7 +24,7 @@ Game State Variables
 let gameState = {
     score: 0,
     level: 1,
-    lives: 3,
+    lives: 6,
     gameRunning: true,
     keys: {
         left: false,

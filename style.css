@@ -80,34 +80,6 @@ body {
     background-size: 20px 20px;
 }
 
-.platform.grass {
-    position: absolute;
-    background-image: url('Super Mango Platformer Assets by JuhoSprite/Super Mango Platformer Assets by JuhoSprite/Grass_Tileset.png');
-    background-repeat: repeat;
-    background-size: 20px 20px;
-}
-
-.platform.stone {
-    position: absolute;
-    background-image: url('Super Mango Platformer Assets by JuhoSprite/Super Mango Platformer Assets by JuhoSprite/Stone_Tileset.png');
-    background-repeat: repeat;
-    background-size: 20px 20px;
-}
-
-.platform.brick {
-    position: absolute;
-    background-image: url('Super Mango Platformer Assets by JuhoSprite/Super Mango Platformer Assets by JuhoSprite/Brick_Tileset.png');
-    background-repeat: repeat;
-    background-size: 20px 20px;
-}
-
-.platform.spike {
-    position: absolute;
-    background-image: url('Super Mango Platformer Assets by JuhoSprite/Super Mango Platformer Assets by JuhoSprite/Spike_Platform.png');
-    background-repeat: repeat;
-    background-size: 20px 20px;
-}
-
 .enemy {
     position: absolute;
 }
@@ -128,36 +100,6 @@ body {
     background-image: url('https://i.imgur.com/SvV4ueD.png');
     background-size: 20px 20px;
     background-repeat: no-repeat;
-}
-
-.enemy.bird {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-image: url('Super Mango Platformer Assets by JuhoSprite/Super Mango Platformer Assets by JuhoSprite/Bird_1.png');
-    background-size: 20px 20px;
-    background-repeat: no-repeat;
-    animation: birdFlap 0.5s steps(2) infinite;
-}
-
-@keyframes birdFlap {
-    0% { background-image: url('Super Mango Platformer Assets by JuhoSprite/Super Mango Platformer Assets by JuhoSprite/Bird_1.png'); }
-    50% { background-image: url('Super Mango Platformer Assets by JuhoSprite/Super Mango Platformer Assets by JuhoSprite/Bird_2.png'); }
-}
-
-.enemy.spider {
-    position: absolute;
-    width: 20px;
-    height: 20px;
-    background-image: url('Super Mango Platformer Assets by JuhoSprite/Super Mango Platformer Assets by JuhoSprite/Spider_1.png');
-    background-size: 20px 20px;
-    background-repeat: no-repeat;
-    animation: spiderWalk 0.6s steps(2) infinite;
-}
-
-@keyframes spiderWalk {
-    0% { background-image: url('Super Mango Platformer Assets by JuhoSprite/Super Mango Platformer Assets by JuhoSprite/Spider_1.png'); }
-    50% { background-image: url('Super Mango Platformer Assets by JuhoSprite/Super Mango Platformer Assets by JuhoSprite/Spider_2.png'); }
 }
 
 .mushroom {
